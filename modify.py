@@ -11,8 +11,6 @@ from oauth2client import tools
 from oauth2client.file import Storage
 from apiclient.http import MediaFileUpload, MediaIoBaseDownload
 from pathlib import Path
-import PyPDF2
-from pdfminer.high_level import extract_text
 
 try:
     import argparse
@@ -56,13 +54,6 @@ def main():
     texts_dir = Path(f'{current_directory}/texts')
     srt_file = open(Path(f'{current_directory}/subtitle_output.txt'), 'a', encoding='utf-8')
     line = 1
-    
-    pdf_file_path = Path(f'{current_directory}/input.pdf')
-    output_text_file_path = Path(f'{current_directory}/output.txt')
-
-    pdf_to_text(pdf_file_path, output_text_file_path)
-
-
 
     if not images_dir.exists():
         images_dir.mkdir()
@@ -99,30 +90,6 @@ def main():
     for i in sorted(srt_file_list):
         srt_file.writelines(srt_file_list[i])
     srt_file.close()
-
-#pdf function for pdf scan 
-
-
-def pdf_to_text(pdf_file_path, output_text_file_path):
-    try:
-        # Check if the input file is encrypted
-        with open(pdf_file_path, 'rb') as file:
-            reader = PyPDF2.PdfFileReader(file)
-            if reader.isEncrypted:
-                print("The input PDF file is encrypted. Cannot extract text.")
-                return
-
-        # Extract text from the input PDF file
-        extracted_text = extract_text(pdf_file_path)
-
-        # Write the extracted text to the output text file
-        with open(output_text_file_path, 'w', encoding='utf-8') as output_file:
-            output_file.write(extracted_text)
-    except Exception as e:
-        print(f"Error processing {pdf_file_path}: {e}")
-
-
-
 
 #this is a function for scan images 
 def ocr_image(image, line, credentials, current_directory):
